@@ -1,7 +1,7 @@
 #include "WebcamManager.hpp"
 #include "GameStrategy.hpp"
 #include "QRgame.hpp"
-#include "RedBallGame.hpp"
+#include "FlagGame.hpp"
 #include <iostream>
 #include <memory>
 
@@ -19,8 +19,8 @@ int main() {
             case GameState::QR_GAME:
                 currentGame = std::make_unique<QRGame>(webcam);
                 break;
-            case GameState::RED_BALL_GAME:
-                currentGame = std::make_unique<RedBallGame>(webcam);
+            case GameState::FLAG_GAME:
+                currentGame = std::make_unique<FlagGame>(webcam);
                 break;
             default:
                 currentState = GameState::EXIT;

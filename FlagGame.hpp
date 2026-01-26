@@ -1,5 +1,5 @@
-#ifndef QR_GAME_HPP
-#define QR_GAME_HPP
+#ifndef FLAG_GAME_HPP
+#define FLAG_GAME_HPP
 
 #include "GameStrategy.hpp"
 #include "WebcamManager.hpp"
@@ -7,16 +7,16 @@
 #include <iostream>
 #include <vector>
 
-class QRGame : public GameStrategy {
+class FlagGame : public GameStrategy {
 private:
     WebcamManager& webcam;
     cv::QRCodeDetector qrDecoder;
 
 public:
-    QRGame(WebcamManager& wm) : webcam(wm) {}
+    FlagGame(WebcamManager& wm) : webcam(wm) {}
 
     virtual GameState run() override {
-        std::cout << "Starting QR Game..." << std::endl;
+        std::cout << "Starting Flag Game..." << std::endl;
         cv::namedWindow("GAME");
         cv::moveWindow("GAME", 0, 0);
         while (true) {
@@ -47,10 +47,10 @@ public:
 
             int key = cv::waitKey(10);
             if (key == 27) return GameState::EXIT; // ESC to exit
-            if (key == 32) return GameState::FLAG_GAME; // Space to Flag Game
+            if (key == 32) return GameState::EXIT; // Space to Exit
         }
         return GameState::EXIT;
     }
 };
 
-#endif // QR_GAME_HPP
+#endif // FLAG_GAME_HPP
