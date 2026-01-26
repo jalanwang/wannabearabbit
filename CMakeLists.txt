@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.10)
 project(OpenCVProject)
 # 시스템에 설치된 OpenCV 패키지를 찾습니다. REQUIRED 옵션은 찾지 못하면 구성을 중단(에러 발생)합니다.
 find_package(OpenCV REQUIRED)
-# main.cpp와 code1.cpp 소스 파일을 컴파일하여 'main'이라는 이름의 실행 파일을 생성합니다.
-add_executable(main main.cpp code1.cpp)
+# main.cpp 소스 파일을 컴파일하여 'main'이라는 이름의 실행 파일을 생성합니다.
+add_executable(main main.cpp)
 # 위에서 찾은 OpenCV 라이브러리 정보(${OpenCV_LIBS})를 'main' 실행 파일에 링크(연결)합니다.
 target_link_libraries(main ${OpenCV_LIBS})
 

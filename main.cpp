@@ -1,60 +1,37 @@
-#ifndef WEBCAM_MANAGER_HPP
-#define WEBCAM_MANAGER_HPP
-
-#include "opencv2/opencv.hpp"
+#include "WebcamManager.hpp"
+#include "GameStrategy.hpp"
+#include "QRgame.hpp"
+#include "RedBallGame.hpp"
 #include <iostream>
+#include <memory>
 
-class WebcamManager {
-private:
-    cv::VideoCapture cap;
-    int width;
-    int height;
-
-public:
-    WebcamManager() : width(0), height(0) {}
-
-    ~WebcamManager() {
-        release();
+int main() {
+    WebcamManager webcam;
+    if (!webcam.initialize()) {
+        return -1;
     }
 
-    bool initialize() {
-        cap.open(0);
-        if (!cap.isOpened()) {
-            std::cerr << "캠을 열 수 없습니다." << std::endl;
-            return false;
+    std::unique_ptr<GameStrategy> currentGame;
+    GameState currentState = GameState::QR_GAME; // 초기 게임: QR 게임
+
+    while (currentState != GameState::EXIT) {
+        switch (currentState) {
+            case GameState::QR_GAME:
+                currentGame = std::make_unique<QRGame>(webcam);
+                break;
+            case GameState::RED_BALL_GAME:
+                currentGame = std::make_unique<RedBallGame>(webcam);
+                break;
+            default:
+                currentState = GameState::EXIT;
+                continue;
         }
 
-        // wsl 환경 설정
-        cap.set(cv::CAP_PROP_FRAME_WIDTH, 1024);
-        cap.set(cv::CAP_PROP_FRAME_HEIGHT, 768);
-        cap.set(cv::CAP_PROP_FPS, 30);
-        cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
-
-        width = cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH));
-        height = cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
-
-        return true;
-    }
-
-    bool getFrame(cv::Mat& frame) {
-        if (!cap.isOpened()) return false;
-        cap >> frame;
-        return !frame.empty();
-    }
-
-    int getWidth() const {
-        return width;
-    }
-
-    int getHeight() const {
-        return height;
-    }
-
-    void release() {
-        if (cap.isOpened()) {
-            cap.release();
+        if (currentGame) {
+            // 선택된 게임 실행 (게임이 종료되면 다음 상태 반환)
+            currentState = currentGame->run();
         }
     }
-};
 
-#endif // WEBCAM_MANAGER_HPP
+    return 0;
+}

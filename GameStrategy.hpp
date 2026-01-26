@@ -3,10 +3,9 @@
 
 enum class GameState {
     EXIT,
-    RED_BALL,
-    TRANSFORM,
     QR_GAME,
-    PLATE_COUNT_GAME
+    GOAL_GAME,
+    RED_BALL_GAME
 };
 
 class GameStrategy {
