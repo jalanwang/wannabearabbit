@@ -6,6 +6,10 @@ project(OpenCVProject)
 find_package(OpenCV REQUIRED)
 # main.cpp 소스 파일을 컴파일하여 'main'이라는 이름의 실행 파일을 생성합니다.
 add_executable(main main.cpp)
+
+# 'main' 타겟에 현재 디렉토리를 포함 경로로 추가합니다.
+target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 # 위에서 찾은 OpenCV 라이브러리 정보(${OpenCV_LIBS})를 'main' 실행 파일에 링크(연결)합니다.
 target_link_libraries(main ${OpenCV_LIBS})
 

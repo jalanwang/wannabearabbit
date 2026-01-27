@@ -27,7 +27,7 @@ public:
             std::vector<cv::Point> points;
             std::string data = qrDecoder.detectAndDecode(frame, points);
             
-            if (data.length() > 0) {
+            if (!data.empty()) {
                 // QR 코드가 인식되면 박스 그리기
                 if (!points.empty() && points.size() == 4) {
                     for(size_t i = 0; i < points.size(); i++) {
