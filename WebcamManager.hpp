@@ -24,9 +24,9 @@ public:
             return false;
         }
 
-        // wsl 환경 설정
-        cap.set(cv::CAP_PROP_FRAME_WIDTH, 1024);
-        cap.set(cv::CAP_PROP_FRAME_HEIGHT, 768);
+        // 로봇 하드웨어(Raspberry Pi 등) 성능 최적화를 위해 해상도를 640x480으로 조정
+        cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+        cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
         cap.set(cv::CAP_PROP_FPS, 30);
         cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 

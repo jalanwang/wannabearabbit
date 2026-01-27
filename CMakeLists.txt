@@ -1,12 +1,32 @@
-# CMake 빌드 시스템의 최소 요구 버전을 3.10으로 설정합니다.
-cmake_minimum_required(VERSION 3.10)
-# 프로젝트의 이름을 'OpenCVProject'로 정의합니다.
-project(OpenCVProject)
-# 시스템에 설치된 OpenCV 패키지를 찾습니다. REQUIRED 옵션은 찾지 못하면 구성을 중단(에러 발생)합니다.
-find_package(OpenCV REQUIRED)
-# main.cpp 소스 파일을 컴파일하여 'main'이라는 이름의 실행 파일을 생성합니다.
-add_executable(main main.cpp)
-# 위에서 찾은 OpenCV 라이브러리 정보(${OpenCV_LIBS})를 'main' 실행 파일에 링크(연결)합니다.
-target_link_libraries(main ${OpenCV_LIBS})
+cmake_minimum_required(VERSION 3.8)
+project(turtlebot_qr)
 
-#mkdir bin && cd bin && cmake .. && make ./main # 실행
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
+# ROS 2 패키지 및 OpenCV 찾기
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(OpenCV REQUIRED)
+
+# 실행 파일 생성 (qr_node.cpp 사용)
+add_executable(qr_node qr_node.cpp)
+
+# 의존성 링크
+ament_target_dependencies(qr_node
+  rclcpp
+  sensor_msgs
+  geometry_msgs
+  cv_bridge
+  OpenCV
+)
+
+# 설치 규칙 (colcon build 후 install 폴더로 복사됨)
+install(TARGETS qr_node
+  DESTINATION lib/${PROJECT_NAME})
+
+ament_package()
