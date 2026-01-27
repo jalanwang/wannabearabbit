@@ -1,4 +1,3 @@
-#include "WebcamManager.hpp"
 #include <memory>
 #include <string>
 
@@ -10,13 +9,7 @@
 #include "GameStrategy.hpp"
 #include "QRgame.hpp"
 #include "FlagGame.hpp"
-#include <iostream>
-#include <memory>
 
-int main() {
-    WebcamManager webcam;
-    if (!webcam.initialize()) {
-        return -1;
 class GameNode : public rclcpp::Node {
 public:
     GameNode() : Node("game_node"), current_state_(GameState::QR_GAME) {
@@ -36,14 +29,10 @@ public:
         RCLCPP_INFO(this->get_logger(), "Game Node Started. State: QR_GAME");
     }
 
-    std::unique_ptr<GameStrategy> currentGame;
-    GameState currentState = GameState::QR_GAME; // 초기 게임: QR 게임
     ~GameNode() {
         cv::destroyAllWindows();
     }
 
-    while (currentState != GameState::EXIT) {
-        switch (currentState) {
 private:
     void image_callback(const sensor_msgs::msg::Image::SharedPtr msg) {
         try {
@@ -76,27 +65,17 @@ private:
         current_state_ = new_state;
         switch (current_state_) {
             case GameState::QR_GAME:
-                currentGame = std::make_unique<QRGame>(webcam);
                 current_game_ = std::make_unique<QRGame>();
                 RCLCPP_INFO(this->get_logger(), "Switched to QR_GAME");
                 break;
             case GameState::FLAG_GAME:
-                currentGame = std::make_unique<FlagGame>(webcam);
                 current_game_ = std::make_unique<FlagGame>();
                 RCLCPP_INFO(this->get_logger(), "Switched to FLAG_GAME");
                 break;
-            default:
-                currentState = GameState::EXIT;
-                continue;
             case GameState::EXIT:
                 RCLCPP_INFO(this->get_logger(), "Exiting Game...");
                 current_game_.reset();
                 break;
-        }
-
-        if (currentGame) {
-            // 선택된 게임 실행 (게임이 종료되면 다음 상태 반환)
-            currentState = currentGame->run();
         }
     }
 

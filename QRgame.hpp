@@ -2,61 +2,52 @@
 #define QR_GAME_HPP
 
 #include "GameStrategy.hpp"
-#include "WebcamManager.hpp"
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <vector>
 
 class QRGame : public GameStrategy {
 private:
-    WebcamManager& webcam;
     cv::QRCodeDetector qrDecoder;
 
 public:
-    QRGame(WebcamManager& wm) : webcam(wm) {}
-
-    virtual GameState run() override {
+    QRGame() {
         std::cout << "Starting QR Game..." << std::endl;
-        cv::namedWindow("GAME");
-        cv::moveWindow("GAME", 0, 0);
-        while (true) {
-            cv::Mat frame;
-            if (!webcam.getFrame(frame)) return GameState::EXIT;
-            cv::flip(frame, frame, 1);
+    }
 
-            std::vector<cv::Point> points;
-            std::string data = qrDecoder.detectAndDecode(frame, points);
+    virtual GameState process(cv::Mat& frame, int key) override {
+        cv::flip(frame, frame, 1);
+
+        std::vector<cv::Point> points;
+        std::string data = qrDecoder.detectAndDecode(frame, points);
+        
+        if (!data.empty()) {
+            // QR 코드가 인식되면 박스 그리기
+            if (!points.empty() && points.size() == 4) {
+                for(size_t i = 0; i < points.size(); i++) {
+                    cv::line(frame, points[i], points[(i+1)%points.size()], cv::Scalar(255, 0, 0), 3);
+                }
+            }
             
-            if (!data.empty()) {
-                // QR 코드가 인식되면 박스 그리기
-                if (!points.empty() && points.size() == 4) {
-                    for(size_t i = 0; i < points.size(); i++) {
-                        cv::line(frame, points[i], points[(i+1)%points.size()], cv::Scalar(255, 0, 0), 3);
-                    }
-                }
-                
-                // 텍스트 위치를 QR 코드 근처로 설정
-                cv::Point textPos(50, 50);
-                if (!points.empty()) {
-                    textPos = points[0];
-                    textPos.y -= 10;
-                }
-
-                // 텍스트 출력
-                cv::putText(frame, "QR Code: " + data, textPos,
-                    cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
-            } else {
-                 cv::putText(frame, "Show QR Code", cv::Point(50, 50),
-                    cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 2);
+            // 텍스트 위치를 QR 코드 근처로 설정
+            cv::Point textPos(50, 50);
+            if (!points.empty()) {
+                textPos = points[0];
+                textPos.y -= 10;
             }
 
-            cv::imshow("GAME", frame);
-
-            int key = cv::waitKey(10);
-            if (key == 27) return GameState::EXIT; // ESC to exit
-            if (key == 32) return GameState::FLAG_GAME; // Space to Flag Game
+            // 텍스트 출력
+            cv::putText(frame, "QR Code: " + data, textPos,
+                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
+        } else {
+                cv::putText(frame, "Show QR Code", cv::Point(50, 50),
+                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 2);
         }
-        return GameState::EXIT;
+
+        if (key == 27) return GameState::EXIT; // ESC to exit
+        if (key == 32) return GameState::FLAG_GAME; // Space to Flag Game
+        
+        return GameState::QR_GAME;
     }
 };
 

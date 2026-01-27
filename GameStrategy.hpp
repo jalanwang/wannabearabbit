@@ -1,6 +1,8 @@
 #ifndef GAME_STRATEGY_HPP
 #define GAME_STRATEGY_HPP
 
+#include <opencv2/opencv.hpp>
+
 enum class GameState {
     EXIT,
     QR_GAME,
@@ -10,7 +12,7 @@ enum class GameState {
 class GameStrategy {
 public:
     virtual ~GameStrategy() {}
-    virtual GameState run() = 0;
+    virtual GameState process(cv::Mat& frame, int key) = 0;
 };
 
 #endif // GAME_STRATEGY_HPP

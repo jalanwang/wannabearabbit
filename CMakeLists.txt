@@ -1,16 +1,38 @@
-# CMake 빌드 시스템의 최소 요구 버전을 3.10으로 설정합니다.
-cmake_minimum_required(VERSION 3.10)
-# 프로젝트의 이름을 'OpenCVProject'로 정의합니다.
-project(OpenCVProject)
-# 시스템에 설치된 OpenCV 패키지를 찾습니다. REQUIRED 옵션은 찾지 못하면 구성을 중단(에러 발생)합니다.
+cmake_minimum_required(VERSION 3.8)
+project(turtlebot)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
-# main.cpp 소스 파일을 컴파일하여 'main'이라는 이름의 실행 파일을 생성합니다.
-add_executable(main main.cpp)
 
-# 'main' 타겟에 현재 디렉토리를 포함 경로로 추가합니다.
-target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_executable(game_node
+  main.cpp
+)
 
-# 위에서 찾은 OpenCV 라이브러리 정보(${OpenCV_LIBS})를 'main' 실행 파일에 링크(연결)합니다.
-target_link_libraries(main ${OpenCV_LIBS})
+target_include_directories(game_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+  ${OpenCV_INCLUDE_DIRS}
+)
 
-#mkdir bin && cd bin && cmake .. && make ./main # 실행
+target_link_libraries(game_node
+  ${OpenCV_LIBRARIES}
+)
+
+ament_target_dependencies(game_node
+  rclcpp
+  sensor_msgs
+  cv_bridge
+)
+
+install(TARGETS game_node
+  DESTINATION lib/${PROJECT_NAME})
+
+ament_package()
