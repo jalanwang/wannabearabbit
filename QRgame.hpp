@@ -35,8 +35,15 @@ public:
                     }
                 }
                 
+                // 텍스트 위치를 QR 코드 근처로 설정
+                cv::Point textPos(50, 50);
+                if (!points.empty()) {
+                    textPos = points[0];
+                    textPos.y -= 10;
+                }
+
                 // 텍스트 출력
-                cv::putText(frame, "QR Code: " + data, cv::Point(50, 50),
+                cv::putText(frame, "QR Code: " + data, textPos,
                     cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
             } else {
                  cv::putText(frame, "Show QR Code", cv::Point(50, 50),
