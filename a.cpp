@@ -1,3 +1,7 @@
+/*
+참조파일
+*/
+
 #include <memory>
 #include <string>
 

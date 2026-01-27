@@ -35,9 +35,15 @@ public:
 
 private:
     void image_callback(const sensor_msgs::msg::Image::SharedPtr msg) {
+        cv::Mat frame;
         try {
-            // Use toCvCopy because the strategy might modify the frame (e.g., flip, draw)
-            cv::Mat frame = cv_bridge::toCvCopy(msg, "bgr8")->image;
+            if (msg->encoding == "nv21") {
+                cv::Mat yuv_frame(msg->height + msg->height / 2, msg->width, CV_8UC1, const_cast<uint8_t*>(msg->data.data()));
+                cv::cvtColor(yuv_frame, frame, cv::COLOR_YUV2BGR_NV21);
+            } else {
+                // Use toCvCopy because the strategy might modify the frame (e.g., flip, draw)
+                frame = cv_bridge::toCvCopy(msg, "bgr8")->image;
+            }
             
             // Handle key press (needed for OpenCV window update and game logic)
             int key = cv::waitKey(1);
